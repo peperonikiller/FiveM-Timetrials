@@ -1,10 +1,11 @@
+local QBCore = exports['qb-core']:GetCoreObject()
 -- Local parameters
 local START_PROMPT_DISTANCE = 10.0              -- distance to prompt to start race
 local DRAW_TEXT_DISTANCE = 100.0                -- distance to start rendering the race name text
 local DRAW_SCORES_DISTANCE = 25.0               -- Distance to start rendering the race scores
 local DRAW_SCORES_COUNT_MAX = 15                -- Maximum number of scores to draw above race title
 local CHECKPOINT_Z_OFFSET = -5.00               -- checkpoint offset in z-axis
-local RACING_HUD_COLOR = {238, 198, 78, 255}    -- color for racing HUD above map
+local RACING_HUD_COLOR = {155, 155, 155, 255}    -- color for racing HUD above map
 
 -- State variables
 local raceState = {
@@ -36,6 +37,7 @@ function preRace()
     raceState.startTime = 0
     raceState.blip = nil
     raceState.checkpoint = nil
+
     
     -- While player is not racing
     while raceState.index == 0 do
@@ -52,10 +54,10 @@ function preRace()
             if DoesBlipExist(waypoint) then 
                 -- Teleport to location, wait 100ms to load then get ground coordinate
                 local coords = GetBlipInfoIdCoord(waypoint)
-                teleportToCoord(coords.x, coords.y, coords.z, 0)
+                --teleportToCoord(coords.x, coords.y, coords.z, 0)
                 Citizen.Wait(100)
                 local temp, zCoord = GetGroundZFor_3dCoord(coords.x, coords.y, 9999.9, 1)
-                teleportToCoord(coords.x, coords.y, zCoord + 4.0, 0)
+                --teleportToCoord(coords.x, coords.y, zCoord + 4.0, 0)
             end
         end
 
@@ -126,7 +128,9 @@ function preRace()
                         -- Set race index, clear scores and trigger event to start the race
                         raceState.index = index
                         raceState.scores = nil
+                        -- pepkilz
                         TriggerEvent("raceCountdown")
+                        --TriggerEvent("openLuckyLottoMenu")
                         break
                     end
                 end
@@ -134,6 +138,7 @@ function preRace()
         end
     end
 end
+
 
 -- Receive race scores from server and print
 RegisterNetEvent("raceReceiveScores")
@@ -149,7 +154,7 @@ AddEventHandler("raceCountdown", function()
     local race = races[raceState.index]
     
     -- Teleport player to start and set heading
-    teleportToCoord(race.start.x, race.start.y, race.start.z + 4.0, race.start.heading)
+    teleportToCoord(race.start.x, race.start.y, race.start.z + 2.0, race.start.heading)
     
     Citizen.CreateThread(function()
         -- Countdown timer
@@ -208,7 +213,7 @@ AddEventHandler("raceRaceActive", function()
                 
                 -- Set new waypoint and teleport to the same spot 
                 SetNewWaypoint(race.start.x, race.start.y)
-                teleportToCoord(race.start.x, race.start.y, race.start.z + 4.0, race.start.heading)
+                --teleportToCoord(race.start.x, race.start.y, race.start.z + 4.0, race.start.heading)
                 
                 -- Clear racing index and break
                 raceState.index = 0
@@ -234,6 +239,8 @@ AddEventHandler("raceRaceActive", function()
                     -- Save time and play sound for finish line
                     local finishTime = (GetGameTimer() - raceState.startTime)
                     PlaySoundFrontend(-1, "ScreenFlash", "WastedSounds")
+                    -- Player.Functions.AddMoney('bank', "50000")
+
                     
                     -- Get vehicle name and create score
                     local aheadVehHash = GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1)))
@@ -246,7 +253,8 @@ AddEventHandler("raceRaceActive", function()
                     -- Send server event with score and message, move this to server eventually
                     message = string.format("Player " .. GetPlayerName(PlayerId()) .. " finished " .. race.title .. " using " .. aheadVehNameText .. " in " .. (finishTime / 1000) .. " s")
                     TriggerServerEvent('racePlayerFinished', GetPlayerName(PlayerId()), message, race.title, score)
-                    
+                    TriggerServerEvent('timetrial:reward')
+                    QBCore.Functions.Notify(message .. " and awarded $" .. Config.Price, "success")
                     -- Clear racing index and break
                     raceState.index = 0
                     break
@@ -352,3 +360,7 @@ function DrawHudText(text,colour,coordsx,coordsy,scalex,scaley)
     AddTextComponentString(text)
     DrawText(coordsx,coordsy)
 end
+
+exports("GetRaceState", function()
+    return raceState
+end)

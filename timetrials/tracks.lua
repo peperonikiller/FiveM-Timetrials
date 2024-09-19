@@ -11,8 +11,37 @@ races = {
         mapBlipColor = 5,                                                           -- Map blip color
         start = { x = -50.0, y = 6326.0, z = 31.0, heading = 135.0, type = 5 },     -- Starting race coordinates (/saveRaceStart)
         checkpoints = {                                                             -- Checkpoints and finish line
-            { x = -60.0, y = 6316.0, z = 31.0, heading = 135.0, type = 5 },         -- Race checkpoints, type 5 is a normal checkpoint (/saveRaceCp)
+            { x = -60.0, y = 6316.0, z = 31.0, heading = 135.0, type = 5 },         -- Race checkpoints, type 5 is a normal checkpoint (/saveRaceCp) vector4(614.6, -5049.49, 49.84, 86.39)
             { x = -50.0, y = 6326.0, z = 31.0, heading = 135.0, type = 9 }          -- Race checkpoints, type 9 is a finish line (/saveRaceEnd)
+        }
+    },
+    {
+        title = "Kang Tao Time Trial",                                                             -- Race title
+        isEnabled = true,                                                          -- Enable the race
+        showWaypoints = false,                                                      -- Set GPS waypoints, waypoint will always be set to next checkpoint + 1
+        checkpointRadius = 20.0,                                                    -- Radius of checkpoint
+        checkpointTransparency = 0.0,                                               -- Checkpoint transparancy
+        mapBlipId = 315,                                                            -- Map blip ID
+        mapBlipColor = 5,                                                           -- Map blip color
+        start = { x = 614.6, y = -5049.49, z = 49.84, heading = 86.39, type = 5 },     -- Starting race coordinates (/saveRaceStart)
+        checkpoints = {                                                             -- Checkpoints and finish line
+            { x = 832.75, y = -4706.68, z = 100.02, heading = 232.77, type = 5 },         -- Race checkpoints, type 5 is a normal checkpoint (/saveRaceCp) 
+            { x = 1065.63, y = -4898.77, z = 100.51, heading = 241.14, type = 5 },         -- Race checkpoints, type 5 is a normal checkpoint (/saveRaceCp) 
+            { x = 1197.54, y = -5311.92, z = 129.44, heading = 216.87, type = 9 }          -- Race checkpoints, type 9 is a finish line (/saveRaceEnd)
+        }
+    },
+    {
+        title = "Dubai Drag",                                                             -- Race title
+        isEnabled = true,                                                          -- Enable the race
+        showWaypoints = false,                                                      -- Set GPS waypoints, waypoint will always be set to next checkpoint + 1
+        checkpointRadius = 50.0,                                                    -- Radius of checkpoint
+        checkpointTransparency = 1.0,                                               -- Checkpoint transparancy
+        mapBlipId = 315,                                                            -- Map blip ID
+        mapBlipColor = 5,                                                           -- Map blip color
+        start = { x = 5023.8, y = -2903.2, z = 20.64, heading = 0.93, type = 5 },     -- Starting race coordinates (/saveRaceStart) vector4(5023.8, -2903.2, 20.64, 0.93)
+        checkpoints = {                                                             -- Checkpoints and finish line
+            --{ x = -60.0, y = 6316.0, z = 31.0, heading = 135.0, type = 5 },         -- Race checkpoints, type 5 is a normal checkpoint (/saveRaceCp)
+            { x = 5023.26, y = 7725.25, z = 20.64, heading = 0.37, type = 9 }          -- Race checkpoints, type 9 is a finish line (/saveRaceEnd) vector4(5023.26, 7725.25, 20.64, 0.37)
         }
     },
     {
@@ -454,3 +483,8 @@ races = {
         }
     }
 }
+exports('GetRaces', function()
+    return races
+end)
+
+exports["timetrials"]:GetRaces(races)

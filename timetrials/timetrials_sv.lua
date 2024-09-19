@@ -1,9 +1,19 @@
+local QBCore = exports['qb-core']:GetCoreObject()
 -- Filename to store scores
 local scoreFileName = "./scores.txt"
 
 -- Colors for printing scores
 local color_finish = {238, 198, 78}
 local color_highscore = {238, 78, 118}
+
+-- function to reward player
+RegisterServerEvent('timetrial:reward')
+AddEventHandler('timetrial:reward', function()
+	local src = source
+	local xPlayer = QBCore.Functions.GetPlayer(src)
+	xPlayer.Functions.AddMoney("cash", Config.Price)
+    xPlayer.Functions.AddItem('repairkit', 1)
+end)
 
 -- Save scores to JSON file
 function saveScores(scores)
@@ -62,8 +72,10 @@ AddEventHandler('racePlayerFinished', function(source, message, title, newScore)
             msgSource = -1
             msgAppend = " (fastest)"
             msgColor = color_highscore
+            --TriggerServerEvent('ak4y-blackmarket:addXP', 5000)
         end
         raceScores[carName] = topScore
+        --TriggerServerEvent('ak4y-blackmarket:addXP', 200)
     else
         -- No scores for this race, create struct and set new high score
         raceScores = {}
