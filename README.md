@@ -1,10 +1,11 @@
 # Remaster project
 Starting with the QBCore framework the following plans for this remaster:
 1. Full QB integration (IN PROGRESS)
-2. Item based leaderboard? (maybe a qb-phone addition?) (TBA)
-3. Variable payout based on time vs other player times (TBA)
-4. Class based leaderboards (TBA)
-5. and more?
+2. Re-color/re-work HUD (Next up)
+3. Item based leaderboard? (maybe a qb-phone addition?) (TBA)
+4. Variable payout based on time vs other player times (TBA)
+5. Class based leaderboards (TBA)
+6. and more?
 
 # FiveM Timetrials
 
