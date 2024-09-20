@@ -4,7 +4,7 @@ local START_PROMPT_DISTANCE = 10.0              -- distance to prompt to start r
 local DRAW_TEXT_DISTANCE = 100.0                -- distance to start rendering the race name text
 local DRAW_SCORES_DISTANCE = 25.0               -- Distance to start rendering the race scores
 local DRAW_SCORES_COUNT_MAX = 15                -- Maximum number of scores to draw above race title
-local CHECKPOINT_Z_OFFSET = -5.00               -- checkpoint offset in z-axis
+local CHECKPOINT_Z_OFFSET = -2.00               -- checkpoint offset in z-axis
 local RACING_HUD_COLOR = {0, 255, 0, 255}    -- color for racing HUD above map
 
 -- State variables
