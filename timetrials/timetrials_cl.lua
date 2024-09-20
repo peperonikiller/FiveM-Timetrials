@@ -5,7 +5,7 @@ local DRAW_TEXT_DISTANCE = 100.0                -- distance to start rendering t
 local DRAW_SCORES_DISTANCE = 25.0               -- Distance to start rendering the race scores
 local DRAW_SCORES_COUNT_MAX = 15                -- Maximum number of scores to draw above race title
 local CHECKPOINT_Z_OFFSET = -5.00               -- checkpoint offset in z-axis
-local RACING_HUD_COLOR = {155, 155, 155, 255}    -- color for racing HUD above map
+local RACING_HUD_COLOR = {0, 255, 0, 255}    -- color for racing HUD above map
 
 -- State variables
 local raceState = {
@@ -65,7 +65,7 @@ function preRace()
         for index, race in pairs(races) do
             if race.isEnabled then
                 -- Draw map marker
-                DrawMarker(1, race.start.x, race.start.y, race.start.z - 1, 0, 0, 0, 0, 0, 0, 3.0001, 3.0001, 1.5001, 255, 165, 0,165, 0, 0, 0,0)
+                DrawMarker(1, race.start.x, race.start.y, race.start.z - 1, 0, 0, 0, 0, 0, 0, 3.0001, 3.0001, 1.5001, 255, 255, 255, 255, 0, 0, 0,0)
                 
                 -- Check distance from map marker and draw text if close enough
                 if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < DRAW_TEXT_DISTANCE then
@@ -167,7 +167,7 @@ AddEventHandler("raceCountdown", function()
         while getcountdown() > 0 do
             -- Update HUD
             Citizen.Wait(1)
-            DrawHudText(getcountdown(), {255,191,0,255},0.5,0.4,4.0,4.0)
+            DrawHudText(getcountdown(), {255, 255, 255, 255},0.5,0.4,4.0,4.0)
             
             -- Disable acceleration/reverse until race starts
             DisableControlAction(2, 71, true)
@@ -193,7 +193,7 @@ AddEventHandler("raceRaceActive", function()
     raceState.startTime = GetGameTimer()
     Citizen.CreateThread(function()
         -- Create first checkpoint
-        checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + CHECKPOINT_Z_OFFSET, race.checkpoints[raceState.cP].x,race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, 204, 204, 1, math.ceil(255*race.checkpointTransparency), 0)
+        checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + CHECKPOINT_Z_OFFSET, race.checkpoints[raceState.cP].x,race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, 255, 255, 255, math.ceil(255*race.checkpointTransparency), 0)
         raceState.blip = AddBlipForCoord(race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z)
         
         -- Set waypoints if enabled
@@ -262,14 +262,14 @@ AddEventHandler("raceRaceActive", function()
 
                 -- Increment checkpoint counter and create next checkpoint
                 raceState.cP = math.ceil(raceState.cP+1)
-                if race.checkpoints[raceState.cP].type == 5 then
+                if race.checkpoints[raceState.cP].type == 12 then
                     -- Create normal checkpoint
-                    checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + CHECKPOINT_Z_OFFSET, race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, 204, 204, 1, math.ceil(255*race.checkpointTransparency), 0)
+                    checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + CHECKPOINT_Z_OFFSET, race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, 255, 255, 255, math.ceil(255*race.checkpointTransparency), 0)
                     raceState.blip = AddBlipForCoord(race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z)
                     SetNewWaypoint(race.checkpoints[raceState.cP+1].x, race.checkpoints[raceState.cP+1].y)
-                elseif race.checkpoints[raceState.cP].type == 9 then
+                elseif race.checkpoints[raceState.cP].type == 16 then
                     -- Create finish line
-                    checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + 4.0, race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, 204, 204, 1, math.ceil(255*race.checkpointTransparency), 0)
+                    checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + 4.0, race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, 255, 255, 255, math.ceil(255*race.checkpointTransparency), 0)
                     raceState.blip = AddBlipForCoord(race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z)
                     SetNewWaypoint(race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y)
                 end
