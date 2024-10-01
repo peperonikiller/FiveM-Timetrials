@@ -4,7 +4,7 @@ New features:
 1. Countdown Timer (If you run out of time it cancels the time-trial.)
 2. Fuelpump Placement (For the RP servers, should help for custom ymaps)
 3. More Config Options (Blip settings, initial countdown time, countdown multiplier)
-
+4. Slight HUD refresh (all on screen timers and score displays converted from Seconds to Minutes:Seconds)
 
 
 Starting with the QBCore framework the following plans for this remaster:
