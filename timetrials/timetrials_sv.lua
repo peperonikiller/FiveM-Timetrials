@@ -43,6 +43,8 @@ function getScores()
     return {}
 end
 
+
+
 -- Create thread to send scores to clients every 5s
 Citizen.CreateThread(function()
     while (true) do
@@ -92,5 +94,6 @@ AddEventHandler('racePlayerFinished', function(source, message, title, newScore)
     saveScores(allScores)
     
     -- Trigger message to all players
-    TriggerClientEvent('chatMessage', -1, "[RACE]", msgColor, message .. msgAppend)
+    TriggerClientEvent('chatMessage', -1, "[TimeTrials]", msgColor, message .. msgAppend)
 end)
+

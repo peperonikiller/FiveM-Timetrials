@@ -4,7 +4,7 @@ game 'gta5'
 
 description '[QB]TimeTrials Remastered'
 
-version '0.1.0'
+version '0.5.0'
 
 
 client_scripts {
@@ -19,3 +19,9 @@ server_scripts {
 shared_scripts {
     'config.lua'
 } 
+
+
+
+files {
+    
+}
