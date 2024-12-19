@@ -3,6 +3,8 @@
 -------------------
 Config = {}
 
+Config.Framework = "esx"    --// esx or qb-core
+
 -- How much money will the player recieve upon completion. (Will update with math later)
 Config.Price = 2000
 
