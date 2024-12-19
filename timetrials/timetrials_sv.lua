@@ -1,4 +1,8 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+if Config.Framework == "qb-core" then
+    local QBCore = exports['qb-core']:GetCoreObject()
+elseif Config.Framework == "esx" then
+    local ESX = exports["es_extended"]:getSharedObject()
+end
 -- Filename to store scores
 local scoreFileName = "./scores.txt"
 
@@ -6,13 +10,32 @@ local scoreFileName = "./scores.txt"
 local color_finish = {238, 198, 78}
 local color_highscore = {238, 78, 118}
 
--- function to reward player
+-- Function to reward player
 RegisterServerEvent('timetrial:reward')
 AddEventHandler('timetrial:reward', function()
-	local src = source
-	local xPlayer = QBCore.Functions.GetPlayer(src)
-	xPlayer.Functions.AddMoney("cash", Config.Price)
-    xPlayer.Functions.AddItem('repairkit', 1)
+    local src = source
+
+    if QBCore ~= nil then
+        -- QB-Core specific reward logic
+        local xPlayer = QBCore.Functions.GetPlayer(src)
+        if xPlayer then
+            xPlayer.Functions.AddMoney("cash", Config.Price)
+            xPlayer.Functions.AddItem('repairkit', 1)
+        else
+            print("QB-Core player not found for source: " .. tostring(src))
+        end
+    elseif ESX ~= nil then
+        -- ESX specific reward logic
+        local xPlayer = ESX.GetPlayerFromId(src)
+        if xPlayer then
+            xPlayer.addMoney(Config.Price)
+            xPlayer.addInventoryItem('repairkit', 1)
+        else
+            print("ESX player not found for source: " .. tostring(src))
+        end
+    else
+        print("No supported framework detected for source: " .. tostring(src))
+    end
 end)
 
 -- Save scores to JSON file
