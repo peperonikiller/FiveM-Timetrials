@@ -2,7 +2,7 @@ fx_version 'adamant'
 
 game 'gta5'
 
-description '[QB]TimeTrials Remastered'
+description '[QB & ESX]TimeTrials Remastered'
 
 version '0.5.0'
 
@@ -17,7 +17,8 @@ server_scripts {
 }
 
 shared_scripts {
-    'config.lua'
+    'config.lua',
+    '@es_extended/imports.lua'
 } 
 
 
