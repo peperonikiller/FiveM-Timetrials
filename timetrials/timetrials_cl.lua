@@ -1,4 +1,8 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+if Config.Framework == "qb-core" then
+    local QBCore = exports['qb-core']:GetCoreObject()
+elseif Config.Framework == "esx" then
+    local ESX = exports["es_extended"]:getSharedObject()
+end
 -- Local parameters
 local START_PROMPT_DISTANCE = 10.0              -- distance to prompt to start race
 local DRAW_TEXT_DISTANCE = 100.0                -- distance to start rendering the race name text
@@ -220,13 +224,20 @@ AddEventHandler("raceRaceActive", function()
             -- Check if countdown time has expired
             if GetGameTimer() > checkpointTime then
                 -- Break the script if countdown time has expired
-                QBCore.Functions.Notify("You ran out of time", "error")
+                if QBCore ~= nil then
+                    QBCore.Functions.Notify("You ran out of time", "error")
+                elseif ESX ~= nil then
+                    ESX.ShowNotification("You ran out of time", false, true)
+                else
+                    print("Notification framework not found.")
+                end
+                
                 DeleteCheckpoint(checkpoint)
                 RemoveBlip(raceState.blip)
                 
                 -- Set new waypoint and teleport to the same spot 
                 SetNewWaypoint(race.start.x, race.start.y)
-                --teleportToCoord(race.start.x, race.start.y, race.start.z + 4.0, race.start.heading)
+                -- teleportToCoord(race.start.x, race.start.y, race.start.z + 4.0, race.start.heading)
                 
                 -- Clear racing index and break
                 raceState.index = 0
@@ -277,8 +288,16 @@ AddEventHandler("raceRaceActive", function()
                     message = string.format("Player " .. GetPlayerName(PlayerId()) .. " finished " .. race.title .. " using " .. aheadVehNameText .. " in " .. (finishTime / 1000) .. " s")
                     TriggerServerEvent('racePlayerFinished', GetPlayerName(PlayerId()), message, race.title, score)
                     TriggerServerEvent('timetrial:reward')
-                    QBCore.Functions.Notify(message .. " and awarded $" .. Config.Price, "success")
-                    TriggerServerEvent('hud:server:RelieveStress', math.random(5, 50))
+                    -- Notify player based on the framework
+                    if QBCore ~= nil then
+                        QBCore.Functions.Notify(message .. " and awarded $" .. Config.Price, "success")
+                        TriggerServerEvent('hud:server:RelieveStress', math.random(5, 50))
+                    elseif ESX ~= nil then
+                        ESX.ShowNotification(message .. " and awarded $" .. Config.Price, false, true)
+                        -- Optional: Add ESX-specific events if needed
+                    else
+                        print("Notification framework not found.")
+                    end
                     -- Clear racing index and break
                     raceState.index = 0
                     break
