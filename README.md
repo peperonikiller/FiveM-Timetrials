@@ -4,10 +4,15 @@
 0.6.0 Update:
 
 Scoreboard now shows QB-Core First Name + Last Name instead of player name
+
 If updating script, scores.txt will need to be moved from the root directory to inside the timetrials folder.
+
 Car classes are now stored via scores.txt and will show on the high scores in-game.
+
 A whitelist system for tracks.lua has been implemented. This allows you to block certain car classes from starting the time-trial.
+
 timetrials now requires qb-core and cw-performance in order to properly run.
+
 
 
 
@@ -28,9 +33,12 @@ Starting with the QBCore framework the following plans for this remaster:
 5. Class based leaderboards (TBA)
 6. and more?
 
+
 # FiveM Timetrials
 
+
 FiveM resource for timetrial races with leaderboard and server side scores.
+
 
 ## Installation
 
