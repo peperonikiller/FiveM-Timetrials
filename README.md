@@ -5,6 +5,8 @@ New features:
 2. Fuelpump Placement (For the RP servers, should help for custom ymaps)
 3. More Config Options (Blip settings, initial countdown time, countdown multiplier)
 4. Slight HUD refresh (all on screen timers and score displays converted from Seconds to Minutes:Seconds)
+5. Car class whitelist. Allow/Disallow certain car classes. (Please check tracks.lua for setting classes)
+6. scores read/write fix
 
 
 Starting with the QBCore framework the following plans for this remaster:
@@ -21,10 +23,7 @@ FiveM resource for timetrial races with leaderboard and server side scores.
 
 ## Installation
 
-1. Add the timetrials folder to your FiveM resources directory
-2. Edit your server.cfg and add "start timetrials"
-3. Modify setting(s) in config.lua to your liking
+1. Install dependancy script here: https://github.com/Coffeelot/cw-performance
+2. Install timetrials
 
-## Credit
 
-* Pringus for simple racing script https://forum.fivem.net/t/release-pringus-simple-race-script/96876
