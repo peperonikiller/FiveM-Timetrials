@@ -20,8 +20,10 @@ shared_scripts {
     'config.lua'
 } 
 
-
+dependencies {
+    'cw-performance'
+}
 
 files {
-    
+    'scores.txt'
 }

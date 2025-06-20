@@ -7,6 +7,7 @@ local DRAW_SCORES_COUNT_MAX = 15                -- Maximum number of scores to d
 local CHECKPOINT_Z_OFFSET = 5.00               -- checkpoint offset in z-axis
 local RACING_HUD_COLOR = {0, 255, 0, 255}    -- color for racing HUD above map
 
+
 -- State variables
 local raceState = {
     cP = 1,
@@ -95,22 +96,27 @@ function preRace()
                                 zOffset = 0.450*(#drawScores - 1)
                             end
 
-                            
 
+
+
+                            -- DRAW SCORES -- CW-PERFORMANCE ADDITION
+                            -- figure somethin out idk
+                           
                             -- Print scores above title
                             for k, score in pairs(drawScores) do
                                 -- Convert milliseconds to minutes:seconds format
                                 -- Draw score text with color coding
                                 if (k > #raceScoreColors) then
                                     -- Draw score in white, decrement offset
-                                    Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %02d:%02d:%02d (%s)", score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), {255,255,255,255}, 4, 0.13, 0.13)
+                                    Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %s %02d:%02d:%02d (%s)", score.rating, score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), {255,255,255,255}, 4, 0.13, 0.13)
                                     zOffset = zOffset - 0.300
                                 else
                                     -- Draw score with color and larger text, decrement offset
-                                    Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %02d:%02d:%02d (%s)", score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), raceScoreColors[k], 4, 0.22, 0.22)
+                                    Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %s %02d:%02d:%02d (%s)", score.rating, score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), raceScoreColors[k], 4, 0.22, 0.22)
                                     zOffset = zOffset - 0.450
                                 end
                             end
+                            
                         end
                     end
                 end
@@ -118,15 +124,31 @@ function preRace()
                 -- When close enough, prompt player
                 if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < START_PROMPT_DISTANCE then
                     
-                    helpMessage("Press ~INPUT_CONTEXT~ to begin the time trial! G for Dev Test")
+                    helpMessage("Press ~INPUT_CONTEXT~ to begin the time trial!")
                     
                     if (IsControlJustReleased(1, 51)) then
-                        -- Set race index, clear scores and trigger event to start the race
-                        raceState.index = index
-                        raceState.scores = nil
-                        TriggerEvent("raceCountdown")
+                       
+                        if race.classList then
+                            --cw-performance
+                            local cwplayer = PlayerPedId()
+                            local cwvehicle = GetVehiclePedIsUsing(cwplayer)
+                            local cwinfo, cwclass, perfRating = exports['cw-performance']:getVehicleInfo(cwvehicle)
+                                if race.allowedClasses[cwclass] == true then
+                                    -- Set race index, clear scores and trigger event to start the race
+                                    raceState.index = index
+                                    raceState.scores = nil
+                                    raceState.getTime = index
+                                    TriggerEvent("raceCountdown")
+                                else
+                                    QBCore.Functions.Notify("Your car is class: " .. cwclass .. " which is not allowed for this race!", "error")
+                                end
+                        end
+                        if  not race.classList then
+                            raceState.index = index
+                            raceState.getTime = index
+                            TriggerEvent("raceCountdown")
                         break
-                        
+                        end
                     end
                 end
             end
@@ -266,15 +288,26 @@ AddEventHandler("raceRaceActive", function()
 
                     
                     -- Get vehicle name and create score
+                    --cw-performance
+                    local cwplayer = PlayerPedId()
+                    local cwvehicle = GetVehiclePedIsUsing(cwplayer)
+                    local cwinfo, cwclass, perfRating = exports['cw-performance']:getVehicleInfo(cwvehicle)
+
                     local aheadVehHash = GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1)))
                     local aheadVehNameText = GetLabelText(GetDisplayNameFromVehicleModel(aheadVehHash))
                     local score = {}
-                    score.player = GetPlayerName(PlayerId())
+                    local tPlayer = QBCore.Functions.GetPlayerData()
+                    local jobName = tPlayer.job.name
+                    print(jobName)
+
+                    score.player = tPlayer.charinfo.firstname .. " " .. tPlayer.charinfo.lastname
                     score.time = finishTime
                     score.car = aheadVehNameText
+                    score.rating = cwclass
+
                     
                     -- Send server event with score and message, move this to server eventually
-                    message = string.format("Player " .. GetPlayerName(PlayerId()) .. " finished " .. race.title .. " using " .. aheadVehNameText .. " in " .. (finishTime / 1000) .. " s")
+                    message = string.format("Driver " .. score.player .. " finished " .. race.title .. " using " .. aheadVehNameText .. " class: ".. cwclass .. " in " .. (finishTime / 1000) .. "!!")
                     TriggerServerEvent('racePlayerFinished', GetPlayerName(PlayerId()), message, race.title, score)
                     TriggerServerEvent('timetrial:reward')
                     QBCore.Functions.Notify(message .. " and awarded $" .. Config.Price, "success")
@@ -284,7 +317,7 @@ AddEventHandler("raceRaceActive", function()
                     break
                 end
 
-                
+                -- New CP style test
 
                 -- Increment checkpoint counter and create next checkpoint
                 raceState.cP = math.ceil(raceState.cP+1)

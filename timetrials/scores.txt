@@ -1,0 +1,31 @@
+{
+    "Sandy Airfield":
+    {
+    "Nagasaki Outlaw":
+        {"time":36269,"player":"Pepkilz","car":"Nagasaki Outlaw","rating":"F"}
+    },
+    "North Rallycross ":
+        {"Canis Freecrawler":{"time":279819,"player":"Pepkilz","car":"Canis Freecrawler","rating":"F"}
+    },
+    "Nurburgring GP":
+        {"Annis Elegy RH8":{"time":113294,"player":"Pepkilz","car":"Annis Elegy RH8","rating":"F"}
+    },
+    "Hillside Loop":
+            {"Obey 9F":{"time":197854,"player":"Pepkilz","car":"Obey 9F","rating":"F"}
+    },
+    "Nurburgring Nordschleife":
+            {"Karin Sultan Custom":{"time":661031,"player":"Pepkilz","car":"Karin Sultan Custom","rating":"F"}
+    },
+    "Davis Quartz Rally":
+            {"Declasse Draugur":{"time":76395,"player":"Pepkilz","car":"Declasse Draugur","rating":"F"}
+    },
+    "Observatory Loop":
+        {"Dinka Kanjo SJ":{"time":91364,"player":"Pepkilz","car":"Dinka Kanjo SJ","rating":"F"}         
+    },
+    "Lakeside Loop":
+        {"Obey 9F":{"time":215664,"player":"Pepkilz","car":"Obey 9F","rating":"F"}
+    },
+    "Hollywood Hills":
+        {"DR1":{"time":110828,"player":"Pepkilz","car":"DR1","rating":"F"}
+    }
+}
