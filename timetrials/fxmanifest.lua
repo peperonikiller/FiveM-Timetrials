@@ -4,7 +4,7 @@ game 'gta5'
 
 description '[QB]TimeTrials Remastered'
 
-version '0.5.0'
+version '0.7.0'
 
 
 client_scripts {

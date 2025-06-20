@@ -1,12 +1,4 @@
 local QBCore = exports['qb-core']:GetCoreObject()
--- Local parameters
-local START_PROMPT_DISTANCE = 10.0              -- distance to prompt to start race
-local DRAW_TEXT_DISTANCE = 100.0                -- distance to start rendering the race name text
-local DRAW_SCORES_DISTANCE = 25.0               -- Distance to start rendering the race scores
-local DRAW_SCORES_COUNT_MAX = 15                -- Maximum number of scores to draw above race title
-local CHECKPOINT_Z_OFFSET = 5.00               -- checkpoint offset in z-axis
-local RACING_HUD_COLOR = {0, 255, 0, 255}    -- color for racing HUD above map
-
 
 -- State variables
 local raceState = {
@@ -43,7 +35,9 @@ function preRace()
     raceState.startTime = 0
     raceState.blip = nil
     raceState.checkpoint = nil
-
+    local cwplayer = PlayerPedId()
+    local cwvehicle = GetVehiclePedIsUsing(cwplayer)
+    local cwinfo, cwclass, perfRating = exports['cw-performance']:getVehicleInfo(cwvehicle)
     
     -- While player is not racing
     while raceState.index == 0 do
@@ -56,17 +50,21 @@ function preRace()
         -- Loop through all races
         for index, race in pairs(races) do
             if race.isEnabled then
+                -- Calculate distance to CP and set marker height
+                local distance = GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), race.start.x, race.start.y, race.start.z)
+                local height = math.min(math.max(distance * 0.1000, 20.0000), 200.0000)
+
                 -- Draw map marker
-                DrawMarker(1, race.start.x, race.start.y, race.start.z - 1, 0, 0, 0, 0, 0, 0, 3.0001, 3.0001, 1.5001, 255, 255, 255, 255, 0, 0, 0,0)
+                DrawMarker(1, race.start.x, race.start.y, race.start.z - 1, 0, 0, 0, 0, 0, 0, 0.2500, 0.2500, height, Config.LOCATION_MARKER[1], Config.LOCATION_MARKER[2], Config.LOCATION_MARKER[3], 255, false, false, 2, false, false, false, false)
                 
                 -- Check distance from map marker and draw text if close enough
-                if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < DRAW_TEXT_DISTANCE then
+                if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < Config.DRAW_TEXT_DISTANCE then
                     -- Draw race name
-                    Draw3DText(race.start.x, race.start.y, race.start.z-0.600, race.title, RACING_HUD_COLOR, 4, 0.3, 0.3)
+                    Draw3DText(race.start.x, race.start.y, race.start.z-0.600, race.title, Config.RACING_HUD_COLOR, 4, 0.3, 0.3)
                 end
 
                 -- When close enough, draw scores
-                if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < DRAW_SCORES_DISTANCE then
+                if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < Config.DRAW_SCORES_DISTANCE then
                     -- If we've received updated scores, display them
                     if raceState.scores ~= nil then
                         -- Get scores for this race and sort them
@@ -78,15 +76,27 @@ function preRace()
                             end
                             table.sort(sortedScores, function(a,b) return a.value.time < b.value.time end)
 
-                            -- Create new list with scores to draw
+                            --[[Create new list with scores to draw OLD METHOD
                             local count = 0
                             drawScores = {}
                             for k, v in pairs(sortedScores) do
-                                if count < DRAW_SCORES_COUNT_MAX then
+                                if count < Config.DRAW_SCORES_COUNT_MAX then
                                     count = count + 1
                                     table.insert(drawScores, v.value)
                                 end
                             end
+                            ]]
+
+                            -- Create new list with scores to draw
+                            local count = 0
+                            drawScores = {}
+                            for k, v in pairs(sortedScores) do
+                                if v.value.rating == cwclass and count < Config.DRAW_SCORES_COUNT_MAX then
+                                    count = count + 1
+                                    table.insert(drawScores, v.value)
+                                end
+                            end
+
 
                             -- Initialize offset
                             local zOffset = 0
@@ -101,20 +111,22 @@ function preRace()
 
                             -- DRAW SCORES -- CW-PERFORMANCE ADDITION
                             -- figure somethin out idk
-                           
-                            -- Print scores above title
+                            
+                            -- Print scores above title for matching class
                             for k, score in pairs(drawScores) do
                                 -- Convert milliseconds to minutes:seconds format
                                 -- Draw score text with color coding
-                                if (k > #raceScoreColors) then
-                                    -- Draw score in white, decrement offset
-                                    Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %s %02d:%02d:%02d (%s)", score.rating, score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), {255,255,255,255}, 4, 0.13, 0.13)
-                                    zOffset = zOffset - 0.300
-                                else
-                                    -- Draw score with color and larger text, decrement offset
-                                    Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %s %02d:%02d:%02d (%s)", score.rating, score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), raceScoreColors[k], 4, 0.22, 0.22)
-                                    zOffset = zOffset - 0.450
-                                end
+                                --if cwclass == score.rating then
+                                    if (k > #raceScoreColors) then
+                                        -- Draw score in white, decrement offset
+                                        Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %s %02d:%02d:%02d (%s)", score.rating, score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), {255,255,255,255}, 4, 0.13, 0.13)
+                                        zOffset = zOffset - 0.300
+                                    else
+                                        -- Draw score with color and larger text, decrement offset
+                                        Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %s %02d:%02d:%02d (%s)", score.rating, score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), raceScoreColors[k], 4, 0.22, 0.22)
+                                        zOffset = zOffset - 0.450
+                                    end
+                                --end
                             end
                             
                         end
@@ -122,7 +134,7 @@ function preRace()
                 end
                 
                 -- When close enough, prompt player
-                if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < START_PROMPT_DISTANCE then
+                if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < Config.START_PROMPT_DISTANCE then
                     
                     helpMessage("Press ~INPUT_CONTEXT~ to begin the time trial!")
                     
@@ -130,9 +142,6 @@ function preRace()
                        
                         if race.classList then
                             --cw-performance
-                            local cwplayer = PlayerPedId()
-                            local cwvehicle = GetVehiclePedIsUsing(cwplayer)
-                            local cwinfo, cwclass, perfRating = exports['cw-performance']:getVehicleInfo(cwvehicle)
                                 if race.allowedClasses[cwclass] == true then
                                     -- Set race index, clear scores and trigger event to start the race
                                     raceState.index = index
@@ -205,14 +214,16 @@ RegisterNetEvent("raceRaceActive")
 AddEventHandler("raceRaceActive", function()
     -- Get race from index
     local race = races[raceState.index]
-    
+
+    -- new CP type 44 using reserved parameter of CreateCheckpoint
+    local markno = 2
     -- Start a new timer
     raceState.startTime = GetGameTimer()
     local countdownTime = Config.CountdownTime * 1000 -- initial countdown time
     local checkpointTime = GetGameTimer() + countdownTime
     Citizen.CreateThread(function()
         -- Create first checkpoint
-        checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + CHECKPOINT_Z_OFFSET, race.checkpoints[raceState.cP].x,race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, 255, 255, 255, math.ceil(255*race.checkpointTransparency), 0)
+        checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + Config.CHECKPOINT_Z_OFFSET, race.checkpoints[raceState.cP].x,race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, Config.CP_COLOR[1], Config.CP_COLOR[2], Config.CP_COLOR[3], Config.CP_COLOR[4], 1)
         raceState.blip = AddBlipForCoord(race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z)
         
         -- Set waypoints if enabled
@@ -262,12 +273,12 @@ AddEventHandler("raceRaceActive", function()
             local seconds = totalTimeSeconds % 60
 
             -- Draw time in minutes and seconds format
-            DrawHudText(("%.0f:%02.0f"):format(minutes, seconds), RACING_HUD_COLOR, 0.015, 0.225, 0.7, 0.7)
+            DrawHudText(("%.0f:%02.0f"):format(minutes, seconds), Config.RACING_HUD_COLOR, 0.015, 0.225, 0.7, 0.7)
             -- Draw checkpoint information
-            DrawHudText(string.format("Checkpoint %i / %i (%d m)", raceState.cP, #race.checkpoints, checkpointDist), RACING_HUD_COLOR, 0.015, 0.265, 0.5, 0.5)
+            DrawHudText(string.format("Checkpoint %i / %i (%d m)", raceState.cP, #race.checkpoints, checkpointDist), Config.RACING_HUD_COLOR, 0.015, 0.265, 0.5, 0.5)
             -- Draw countdown timer
             local countdownSeconds = math.floor((checkpointTime - GetGameTimer()) / 1000)
-            DrawHudText(string.format("Remaining: %02d:%02d", math.floor(countdownSeconds / 60), countdownSeconds % 60), RACING_HUD_COLOR, 0.015, 0.305, 0.4, 0.4)
+            DrawHudText(string.format("Remaining: %02d:%02d", math.floor(countdownSeconds / 60), countdownSeconds % 60), Config.RACING_HUD_COLOR, 0.015, 0.305, 0.4, 0.4)
             
             
             -- Check distance from checkpoint
@@ -297,8 +308,6 @@ AddEventHandler("raceRaceActive", function()
                     local aheadVehNameText = GetLabelText(GetDisplayNameFromVehicleModel(aheadVehHash))
                     local score = {}
                     local tPlayer = QBCore.Functions.GetPlayerData()
-                    local jobName = tPlayer.job.name
-                    print(jobName)
 
                     score.player = tPlayer.charinfo.firstname .. " " .. tPlayer.charinfo.lastname
                     score.time = finishTime
@@ -307,10 +316,9 @@ AddEventHandler("raceRaceActive", function()
 
                     
                     -- Send server event with score and message, move this to server eventually
-                    message = string.format("Driver " .. score.player .. " finished " .. race.title .. " using " .. aheadVehNameText .. " class: ".. cwclass .. " in " .. (finishTime / 1000) .. "!!")
-                    TriggerServerEvent('racePlayerFinished', GetPlayerName(PlayerId()), message, race.title, score)
-                    TriggerServerEvent('timetrial:reward')
-                    QBCore.Functions.Notify(message .. " and awarded $" .. Config.Price, "success")
+                    message = string.format("Driver " .. score.player .. " finished " .. race.title .. " using " .. aheadVehNameText .. ". Class: ".. cwclass .. " - in " .. (finishTime / 1000) .. "!!")
+                    TriggerServerEvent('racePlayerFinished', GetPlayerName(PlayerId()), message, race.title, score, GetPlayerServerId(PlayerId()), (checkpointTime / 10000))
+                    QBCore.Functions.Notify(message, "success")
                     TriggerServerEvent('hud:server:RelieveStress', math.random(5, 50))
                     -- Clear racing index and break
                     raceState.index = 0
@@ -321,14 +329,16 @@ AddEventHandler("raceRaceActive", function()
 
                 -- Increment checkpoint counter and create next checkpoint
                 raceState.cP = math.ceil(raceState.cP+1)
+                
                 if race.checkpoints[raceState.cP].type == Config.cpBlip then
                     -- Create normal checkpoint
-                    checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + 5, race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, 255, 255, 255, math.ceil(255*race.checkpointTransparency), race.checkpoints[raceState.cP].heading)
+                    checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + Config.CHECKPOINT_Z_OFFSET, race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, Config.CP_COLOR[1], Config.CP_COLOR[2], Config.CP_COLOR[3], Config.CP_COLOR[4], markno)
                     raceState.blip = AddBlipForCoord(race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z)
                     SetNewWaypoint(race.checkpoints[raceState.cP+1].x, race.checkpoints[raceState.cP+1].y)
+                    markno = markno + 1
                 elseif race.checkpoints[raceState.cP].type == Config.finishBlip then
                     -- Create finish line
-                    checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + 4.0, race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, 255, 255, 255, math.ceil(255*race.checkpointTransparency), race.checkpoints[raceState.cP].heading)
+                    checkpoint = CreateCheckpoint(race.checkpoints[raceState.cP].type, race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z + 4.0, race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z, race.checkpointRadius, Config.CP_COLOR[1], Config.CP_COLOR[2], Config.CP_COLOR[3], Config.CP_COLOR[4], markno)
                     raceState.blip = AddBlipForCoord(race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y, race.checkpoints[raceState.cP].z)
                     SetNewWaypoint(race.checkpoints[raceState.cP].x, race.checkpoints[raceState.cP].y)
                 end
