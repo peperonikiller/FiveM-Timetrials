@@ -1,5 +1,14 @@
 # Remaster project
 
+
+0.6.0 Update
+If updating script, scores.txt will need to be moved from the root directory to inside the timetrials folder.
+Car classes are now stored via scores.txt and will show on the high scores in-game.
+A whitelist system for tracks.lua has been implemented. This allows you to block certain car classes from starting the time-trial.
+timetrials now requires qb-core and cw-performance in order to properly run.
+
+
+
 New features:
 1. Countdown Timer (If you run out of time it cancels the time-trial.)
 2. Fuelpump Placement (For the RP servers, should help for custom ymaps)
