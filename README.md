@@ -1,17 +1,7 @@
 # Remaster project
 
 
-0.6.0 Update:
-
-Scoreboard now shows QB-Core First Name + Last Name instead of player name
-
-If updating script, scores.txt will need to be moved from the root directory to inside the timetrials folder.
-
-Car classes are now stored via scores.txt and will show on the high scores in-game.
-
-A whitelist system for tracks.lua has been implemented. This allows you to block certain car classes from starting the time-trial.
-
-timetrials now requires qb-core and cw-performance in order to properly run.
+0.7.0 Update on June 20th
 
 
 
@@ -19,22 +9,17 @@ timetrials now requires qb-core and cw-performance in order to properly run.
 New features:
 1. Countdown Timer (If you run out of time it cancels the time-trial.)
 2. Fuelpump Placement (For the RP servers, should help for custom ymaps)
-3. More Config Options (Blip settings, initial countdown time, countdown multiplier)
+3. More Config Options (Blip settings, initial countdown time, countdown multiplyer, HUD Colors, &More)
 4. Slight HUD refresh (all on screen timers and score displays converted from Seconds to Minutes:Seconds)
 5. Car class whitelist. Allow/Disallow certain car classes. (Please check tracks.lua for setting classes)
 6. scores read/write fix
+7. Class based high scores, only see scores from same car class
+8. Payout for completion, high score, and time remaining bonus
 
 
-Starting with the QBCore framework the following plans for this remaster:
-1. Full QB integration (IN PROGRESS: Notifications and basic money payout currently)
-2. Re-color/re-work HUD
-3. Item based (option to require item) item opens NUI menu to show players, tracks, and scores
-4. Variable payout based on length of track, time remaining, 1st place, etc.
-5. Class based leaderboards (TBA)
-6. and more?
 
-
-# FiveM Timetrials
+# FiveM QB-Timetrials Remastered
+This version requires QB-Core
 
 
 FiveM resource for timetrial races with leaderboard and server side scores.
@@ -44,5 +29,6 @@ FiveM resource for timetrial races with leaderboard and server side scores.
 
 1. Install dependancy script here: https://github.com/Coffeelot/cw-performance
 2. Install timetrials
+3. Setup config to your liking
 
 
