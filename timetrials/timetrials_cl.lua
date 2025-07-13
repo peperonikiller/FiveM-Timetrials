@@ -1,5 +1,3 @@
-local QBCore = exports['qb-core']:GetCoreObject()
-
 -- State variables
 local raceState = {
     cP = 1,
@@ -10,22 +8,28 @@ local raceState = {
     checkpoint = nil
 }
 
--- Array of colors to display scores, top to bottom and scores out of range will be white
-local raceScoreColors = {
-    {214, 175, 54, 255},
-    {167, 167, 173, 255},
-    {167, 112, 68, 255}
-}
-
 -- Create preRace thread
 Citizen.CreateThread(function()
     preRace()
-    -- Add gas pump
-    for _, coords in ipairs(Config.GasPumpLocations) do
-        local object = CreateObject(GetHashKey("prop_gas_pump_1a"), coords, true, false, false)
-        FreezeEntityPosition(object, true)
-    end
 end)
+
+-- Load Gas Pumps from config, place them on the map if terrain is loaded.
+-- Plan to redo this later so it only loads a pump when the player enters the area
+Citizen.CreateThread(function()
+        for _, coords in ipairs(Config.GasPumpLocations) do
+                local object = CreateObject(GetHashKey("prop_gas_pump_1a"), coords[1], coords[2], coords[3], true, false, false)
+                FreezeEntityPosition(object, true)   
+        end
+end)
+
+
+
+
+local function getVehiclePerformanceInfo(vehicle)
+    local cwinfo, cwclass, perfRating = exports['cw-performance']:getVehicleInfo(vehicle)
+    return cwinfo, cwclass, perfRating
+end
+
 
 -- Function that runs when a race is NOT active
 function preRace()
@@ -35,9 +39,6 @@ function preRace()
     raceState.startTime = 0
     raceState.blip = nil
     raceState.checkpoint = nil
-    local cwplayer = PlayerPedId()
-    local cwvehicle = GetVehiclePedIsUsing(cwplayer)
-    local cwinfo, cwclass, perfRating = exports['cw-performance']:getVehicleInfo(cwvehicle)
     
     -- While player is not racing
     while raceState.index == 0 do
@@ -46,6 +47,7 @@ function preRace()
 
         -- Get player
         local player = GetPlayerPed(-1)
+        
 
         -- Loop through all races
         for index, race in pairs(races) do
@@ -53,14 +55,19 @@ function preRace()
                 -- Calculate distance to CP and set marker height
                 local distance = GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), race.start.x, race.start.y, race.start.z)
                 local height = math.min(math.max(distance * 0.1000, 20.0000), 200.0000)
-
-                -- Draw map marker
-                DrawMarker(1, race.start.x, race.start.y, race.start.z - 1, 0, 0, 0, 0, 0, 0, 0.2500, 0.2500, height, Config.LOCATION_MARKER[1], Config.LOCATION_MARKER[2], Config.LOCATION_MARKER[3], 255, false, false, 2, false, false, false, false)
-                
+								
                 -- Check distance from map marker and draw text if close enough
                 if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < Config.DRAW_TEXT_DISTANCE then
+										-- Draw map marker
+										DrawMarker(1, race.start.x, race.start.y, race.start.z - 1, 0, 0, 0, 0, 0, 0, 0.2500, 0.2500, height, Config.LOCATION_MARKER[1], Config.LOCATION_MARKER[2], Config.LOCATION_MARKER[3], 255, false, false, 2, false, false, false, false)
+                
                     -- Draw race name
                     Draw3DText(race.start.x, race.start.y, race.start.z-0.600, race.title, Config.RACING_HUD_COLOR, 4, 0.3, 0.3)
+                    -- Draw "Whitelisted" text if race is whitelisted
+                    if race.whitelist then
+                        Draw3DText(race.start.x, race.start.y, race.start.z-1.500, "Whitelisted", {0, 255, 0, 200}, 4, 0.08, 0.08)
+                    end
+
                 end
 
                 -- When close enough, draw scores
@@ -76,18 +83,9 @@ function preRace()
                             end
                             table.sort(sortedScores, function(a,b) return a.value.time < b.value.time end)
 
-                            --[[Create new list with scores to draw OLD METHOD
-                            local count = 0
-                            drawScores = {}
-                            for k, v in pairs(sortedScores) do
-                                if count < Config.DRAW_SCORES_COUNT_MAX then
-                                    count = count + 1
-                                    table.insert(drawScores, v.value)
-                                end
-                            end
-                            ]]
-
                             -- Create new list with scores to draw
+                            local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
+                            local cwinfo, cwclass, perfRating = getVehiclePerformanceInfo(vehicle)
                             local count = 0
                             drawScores = {}
                             for k, v in pairs(sortedScores) do
@@ -100,8 +98,8 @@ function preRace()
 
                             -- Initialize offset
                             local zOffset = 0
-                            if (#drawScores > #raceScoreColors) then
-                                zOffset = 0.450*(#raceScoreColors) + 0.300*(#drawScores - #raceScoreColors - 1)
+                            if (#drawScores > #Config.raceScoreColors) then
+                                zOffset = 0.450*(#Config.raceScoreColors) + 0.300*(#drawScores - #Config.raceScoreColors - 1)
                             else
                                 zOffset = 0.450*(#drawScores - 1)
                             end
@@ -110,20 +108,17 @@ function preRace()
 
 
                             -- DRAW SCORES -- CW-PERFORMANCE ADDITION
-                            -- figure somethin out idk
-                            
                             -- Print scores above title for matching class
                             for k, score in pairs(drawScores) do
                                 -- Convert milliseconds to minutes:seconds format
                                 -- Draw score text with color coding
-                                --if cwclass == score.rating then
-                                    if (k > #raceScoreColors) then
+                                    if (k > #Config.raceScoreColors) then
                                         -- Draw score in white, decrement offset
                                         Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %s %02d:%02d:%02d (%s)", score.rating, score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), {255,255,255,255}, 4, 0.13, 0.13)
                                         zOffset = zOffset - 0.300
                                     else
                                         -- Draw score with color and larger text, decrement offset
-                                        Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %s %02d:%02d:%02d (%s)", score.rating, score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), raceScoreColors[k], 4, 0.22, 0.22)
+                                        Draw3DText(race.start.x, race.start.y, race.start.z+zOffset, string.format("%s %s %02d:%02d:%02d (%s)", score.rating, score.car, math.floor(score.time/60000), math.floor((score.time%60000)/1000), math.floor(score.time%1000), score.player), Config.raceScoreColors[k], 4, 0.22, 0.22)
                                         zOffset = zOffset - 0.450
                                     end
                                 --end
@@ -135,28 +130,102 @@ function preRace()
                 
                 -- When close enough, prompt player
                 if GetDistanceBetweenCoords( race.start.x, race.start.y, race.start.z, GetEntityCoords(player)) < Config.START_PROMPT_DISTANCE then
-                    
-                    helpMessage("Press ~INPUT_CONTEXT~ to begin the time trial!")
-                    
+                    helpMessage(Config.START_PROMPT)
                     if (IsControlJustReleased(1, 51)) then
-                       
                         if race.classList then
                             --cw-performance
-                                if race.allowedClasses[cwclass] == true then
-                                    -- Set race index, clear scores and trigger event to start the race
+                            local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
+                            local cwinfo, cwclass, perfRating = getVehiclePerformanceInfo(vehicle)
+                                -- if class of car is allowed and no whitelist start the race
+                                if race.allowedClasses[cwclass] == true and race.whitelist == false then
                                     raceState.index = index
                                     raceState.scores = nil
                                     raceState.getTime = index
                                     TriggerEvent("raceCountdown")
-                                else
-                                    QBCore.Functions.Notify("Your car is class: " .. cwclass .. " which is not allowed for this race!", "error")
+                                elseif race.allowedClasses[cwclass] == false then
+                                    NotifyNotAllowedClass(cwclass)
+                                -- if class of car is allowed and whitelist is on and spawn player in vehicle is false then we do shit
+                                elseif race.allowedClasses[cwclass] == true and race.whitelist == true and race.spawnVeh == false then
+                                    local pVehModel = GetEntityModel(vehicle)
+                                    -- checking if player vehicle is in the whitelist table
+                                    if race.whitelistVehicles[pVehModel] == true then
+                                        raceState.index = index
+                                        raceState.scores = nil
+                                        raceState.getTime = index
+                                        TriggerEvent("raceCountdown")
+                                    else
+                                        notify("Your vehicle is not whitelisted for this race!", "error")
+                                    end
+                                elseif race.allowedClasses[cwclass] == true and race.whitelist == true and race.spawnVeh == true then
+                                    -- check if player is in a vehicle, if so we cant start.
+                                    if IsPedInAnyVehicle(GetPlayerPed(-1), false) then
+                                        notify("You are already in a vehicle!", "error")
+                                    else
+                                        --spawn player in whitelisted vehicle from the race.whitelistVehicles table then start the race
+                                        local vehicleHashes = {}
+                                        for hash, _ in pairs(race.whitelistVehicles) do
+                                            table.insert(vehicleHashes, hash)
+                                        end
+
+                                        local vehicleHash = vehicleHashes[math.random(1, #vehicleHashes)]
+                                        local playerPed = GetPlayerPed(-1)
+                                        local playerCoords = GetEntityCoords(playerPed)
+                                        local vehicle = CreateVehicle(vehicleHash, playerCoords, 0, true, false)
+                                        SetPedIntoVehicle(playerPed, vehicle, -1)
+                                        local vehicleHandle = NetworkGetNetworkIdFromEntity(vehicle)
+                                        SetNetworkIdCanMigrate(vehicleHandle, false)
+                                        SetEntityInvincible(vehicle, true)
+                                        raceState.index = index
+                                        raceState.scores = nil
+                                        raceState.getTime = index
+                                        TriggerEvent("raceCountdown")
+                                    end
                                 end
                         end
                         if  not race.classList then
-                            raceState.index = index
-                            raceState.getTime = index
-                            TriggerEvent("raceCountdown")
-                        break
+                            -- finish this, this is not using cw-performance so we need to do all our IF statements again but without cw-performance checks
+                            local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
+                            if race.whitelist == false then
+                                    raceState.index = index
+                                    raceState.scores = nil
+                                    raceState.getTime = index
+                                    TriggerEvent("raceCountdown")
+                            elseif race.whitelist == true and race.spawnVeh == false then
+                                    local pVehModel = GetEntityModel(vehicle)
+                                    -- checking if player vehicle is in the whitelist table
+                                    if race.whitelistVehicles[pVehModel] == true then
+                                        raceState.index = index
+                                        raceState.scores = nil
+                                        raceState.getTime = index
+                                        TriggerEvent("raceCountdown")
+                                    else
+                                        notify("Your vehicle is not whitelisted for this race!", "error")
+                                    end
+                            elseif race.whitelist == true and race.spawnVeh == true then
+                                    -- check if player is in a vehicle, if so we cant start.
+                                    if IsPedInAnyVehicle(GetPlayerPed(-1), false) then
+                                        notify("You are already in a vehicle!", "error")
+                                    else
+                                        --spawn player in whitelisted vehicle from the race.whitelistVehicles table then start the race
+                                        local vehicleHashes = {}
+                                        for hash, _ in pairs(race.whitelistVehicles) do
+                                            table.insert(vehicleHashes, hash)
+                                        end
+
+                                        local vehicleHash = vehicleHashes[math.random(1, #vehicleHashes)]
+                                        local playerPed = GetPlayerPed(-1)
+                                        local playerCoords = GetEntityCoords(playerPed)
+                                        local vehicle = CreateVehicle(vehicleHash, playerCoords, 0, true, false)
+                                        SetPedIntoVehicle(playerPed, vehicle, -1)
+                                        local vehicleHandle = NetworkGetNetworkIdFromEntity(vehicle)
+                                        SetNetworkIdCanMigrate(vehicleHandle, false)
+                                        SetEntityInvincible(vehicle, true)
+                                        raceState.index = index
+                                        raceState.scores = nil
+                                        raceState.getTime = index
+                                        TriggerEvent("raceCountdown")
+                                    end
+                                end
                         end
                     end
                 end
@@ -165,6 +234,10 @@ function preRace()
     end
 end
 
+function NotifyNotAllowedClass(cwclass)
+    local text = "Your car is class: " .. cwclass .. " which is not allowed for this race!"
+    notify(text, "error")
+end
 
 -- Receive race scores from server and print
 RegisterNetEvent("raceReceiveScores")
@@ -236,15 +309,17 @@ AddEventHandler("raceRaceActive", function()
             Citizen.Wait(1)
             
             -- Stop race when L is pressed, clear and reset everything
-            if IsControlJustReleased(0, 182) and GetLastInputMethod(0) then
+            if IsControlJustReleased(0, Config.CancelBind) and GetLastInputMethod(0) then
                 -- Delete checkpoint and raceState.blip
                 DeleteCheckpoint(checkpoint)
                 RemoveBlip(raceState.blip)
-                
-                -- Set new waypoint and teleport to the same spot 
+                -- Set new waypoint 
                 SetNewWaypoint(race.start.x, race.start.y)
-                --teleportToCoord(race.start.x, race.start.y, race.start.z + 4.0, race.start.heading)
+                if Config.cancelTP == true then
+                    teleportToCoord(race.start.x, race.start.y, race.start.z + 4.0, race.start.heading)
+                end
                 
+
                 -- Clear racing index and break
                 raceState.index = 0
                 break
@@ -253,7 +328,7 @@ AddEventHandler("raceRaceActive", function()
             -- Check if countdown time has expired
             if GetGameTimer() > checkpointTime then
                 -- Break the script if countdown time has expired
-                QBCore.Functions.Notify("You ran out of time", "error")
+                notify("You ran out of time", "error")
                 DeleteCheckpoint(checkpoint)
                 RemoveBlip(raceState.blip)
                 
@@ -295,37 +370,40 @@ AddEventHandler("raceRaceActive", function()
                     -- Save time and play sound for finish line
                     local finishTime = (GetGameTimer() - raceState.startTime)
                     PlaySoundFrontend(-1, "ScreenFlash", "WastedSounds")
-                    -- Player.Functions.AddMoney('bank', "50000")
-
-                    
+                                        
                     -- Get vehicle name and create score
-                    --cw-performance
-                    local cwplayer = PlayerPedId()
-                    local cwvehicle = GetVehiclePedIsUsing(cwplayer)
-                    local cwinfo, cwclass, perfRating = exports['cw-performance']:getVehicleInfo(cwvehicle)
+                    
 
                     local aheadVehHash = GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1)))
                     local aheadVehNameText = GetLabelText(GetDisplayNameFromVehicleModel(aheadVehHash))
                     local score = {}
-                    local tPlayer = QBCore.Functions.GetPlayerData()
+                    local tPlayer = getPlayerData()
 
+                    if tPlayer.charinfo == nil then
+                        tPlayer.charinfo = {}
+                        tPlayer.charinfo.firstname = "Unknown"
+                        tPlayer.charinfo.lastname = "Unknown"
+                        print("Still FUDGED")
+                    end
+
+                    local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
+                    local cwinfo, cwclass, perfRating = getVehiclePerformanceInfo(vehicle)
                     score.player = tPlayer.charinfo.firstname .. " " .. tPlayer.charinfo.lastname
                     score.time = finishTime
                     score.car = aheadVehNameText
                     score.rating = cwclass
-
-                    
-                    -- Send server event with score and message, move this to server eventually
-                    message = string.format("Driver " .. score.player .. " finished " .. race.title .. " using " .. aheadVehNameText .. ". Class: ".. cwclass .. " - in " .. (finishTime / 1000) .. "!!")
-                    TriggerServerEvent('racePlayerFinished', GetPlayerName(PlayerId()), message, race.title, score, GetPlayerServerId(PlayerId()), (checkpointTime / 10000))
-                    QBCore.Functions.Notify(message, "success")
-                    TriggerServerEvent('hud:server:RelieveStress', math.random(5, 50))
-                    -- Clear racing index and break
+                    local playerID = GetPlayerServerId(PlayerId())
+                    local message = string.format("Driver " .. score.player .. " finished " .. race.title .. " using " .. aheadVehNameText .. ". Class: ".. cwclass .. " - in " .. (finishTime / 1000) .. "!!")
+                    TriggerServerEvent('racePlayerFinished', GetPlayerName(PlayerId()), message, race.title, score, playerID)
+                    notify(message, "success")
                     raceState.index = 0
+                    if race.spawnVeh == true then
+                        --despawn vehicle so player can't get a free ride or clutter the server.
+                        Citizen.Wait(5000)
+                        DeleteVehicle(vehicle)
+                    end
                     break
                 end
-
-                -- New CP style test
 
                 -- Increment checkpoint counter and create next checkpoint
                 raceState.cP = math.ceil(raceState.cP+1)
@@ -345,7 +423,7 @@ AddEventHandler("raceRaceActive", function()
 
                 -- Tick countdown timer
                 --DEBUG print(GetDistanceBetweenCoords(race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z, GetEntityCoords(GetPlayerPed(-1))) / 10)
-                distance = GetDistanceBetweenCoords(race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z, GetEntityCoords(GetPlayerPed(-1)))
+                local distance = GetDistanceBetweenCoords(race.checkpoints[raceState.cP].x,  race.checkpoints[raceState.cP].y,  race.checkpoints[raceState.cP].z, GetEntityCoords(GetPlayerPed(-1)))
                 checkpointTime = checkpointTime + distance * Config.timeoutMulti
             end
         end

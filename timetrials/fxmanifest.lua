@@ -1,23 +1,25 @@
-fx_version 'adamant'
+fx_version 'cerulean'
 
 game 'gta5'
 
 description '[QB]TimeTrials Remastered'
+author 'Brent_Peterson | Remaster: Peperonikiller'
 
-version '0.7.0'
+version '0.8.0'
 
 
 client_scripts {
-	"tracks.lua",
-	"timetrials_cl.lua"
+	'tracks.lua',
+	'timetrials_cl.lua',
+    'framework/client/*.lua'
 }
 
 server_scripts {
-	"timetrials_sv.lua"
+	'timetrials_sv.lua'
 }
 
 shared_scripts {
-    'config.lua'
+    'shared/config.lua'
 } 
 
 dependencies {
@@ -25,5 +27,5 @@ dependencies {
 }
 
 files {
-    'scores.txt'
+    'scores.lua'
 }

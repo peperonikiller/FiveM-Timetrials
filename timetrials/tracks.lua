@@ -16,6 +16,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,                                                          -- Set to true to enable whitelist                                  
+        whitelistVehicles = {},                                                     -- List of whitelisted vehicles     {[GetHashKey("anubis")] = true,[GetHashKey("car")] = true,}    
         checkpointRadius = 20.0,                                                    -- Radius of checkpoint
         checkpointTransparency = 0.0,                                               -- Checkpoint transparancy
         mapBlipId = 315,                                                            -- Map blip ID
@@ -42,6 +44,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 50.0,                                                    -- Radius of checkpoint
         checkpointTransparency = 1.0,                                               -- Checkpoint transparancy
         mapBlipId = 315,                                                            -- Map blip ID
@@ -67,6 +71,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -94,6 +100,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -119,6 +127,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -155,6 +165,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -208,6 +220,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 15.0,
         checkpointTransparency = 0.6,
         mapBlipId = 315,
@@ -253,6 +267,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 20.0,
         checkpointTransparency = 0.6,
         mapBlipId = 315,
@@ -322,6 +338,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -385,6 +403,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 16.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -422,6 +442,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 16.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -466,6 +488,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 20.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -505,6 +529,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -559,6 +585,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 20.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -624,6 +652,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 16.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -682,6 +712,8 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = false,
+        whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
         mapBlipId = 315,
@@ -702,7 +734,7 @@ races = {
         }
     },
 		{
-        title = "Around the Block",                                                             -- Race title
+        title = "Stinger GT",                                                             -- Race title
         isEnabled = true,                                                          -- Enable the race
         showWaypoints = true,                                                      -- Set GPS waypoints, waypoint will always be set to next checkpoint + 1
         classList = true,                    -- Enable the allowedClasses list
@@ -716,15 +748,20 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
+        whitelist = true,
+        whitelistVehicles = {
+            [GetHashKey("Stinger")] = true,
+        },
+        spawnVeh = true,                                                           -- Set to true to spawn vehicle on race start, set to false to use player owned whitelisted vehicle, if multiple whitelisted vehicles are available it will choose randomly.
         checkpointRadius = 20.0,                                                    -- Radius of checkpoint
         checkpointTransparency = 1.0,                                               -- Checkpoint transparancy
         mapBlipId = 315,                                                            -- Map blip ID
         mapBlipColor = 5,                                                           -- Map blip color
         start = {x = 890.76, y = -2353.09, z = 30.4, heading = 268.81, type = Config.cpBlip },     -- Starting race coordinates (/saveRaceStart)
         checkpoints = {                                                             -- Checkpoints and finish line
-            {x = 947.63, y = -2463.41, z = 32, heading = 266.22, type = Config.cpBlip },
-            {x = 1051.02, y = -2243.75, z = 32, heading = 356.08, type = Config.cpBlip },
-            {x = 928.04, y = -2125.33, z = 32, heading = 170.88, type = Config.cpBlip },
+            {x = 947.63, y = -2463.41, z = 28, heading = 266.22, type = Config.cpBlip },
+            {x = 1051.02, y = -2243.75, z = 30, heading = 356.08, type = Config.cpBlip },
+            {x = 928.04, y = -2125.33, z = 30, heading = 170.88, type = Config.cpBlip },
 			{x = 898.44, y = -2353.89, z = 32, heading = 100, type = Config.finishBlip }
 		}
     }
