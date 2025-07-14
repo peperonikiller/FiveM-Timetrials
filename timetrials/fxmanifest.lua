@@ -27,5 +27,5 @@ dependencies {
 }
 
 files {
-    'scores.lua'
+    'scores.json'
 }
