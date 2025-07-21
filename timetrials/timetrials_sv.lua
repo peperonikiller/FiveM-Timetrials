@@ -16,6 +16,7 @@ function getScores()
     end
 end
 
+
 -- Create thread to send scores to clients every 5s
 Citizen.CreateThread(function()
     while (true) do
@@ -23,6 +24,8 @@ Citizen.CreateThread(function()
         TriggerClientEvent('raceReceiveScores', -1, getScores())
     end
 end)
+
+
 
 -- Save score, give payout, and send chat message when player finishes
 RegisterServerEvent('racePlayerFinished')
@@ -91,4 +94,5 @@ AddEventHandler('onResourceStart', function(resource)
     print('^5-TimeTrials 0.8.0 has Started- ')
     if Config.Debug then print("^5[TimeTrials]^6Debug Mode Enabled") end
 end)
+
 

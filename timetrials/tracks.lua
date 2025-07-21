@@ -2,11 +2,11 @@
 -- Racing configuration, edit this to add or change races
 races = {
     {
-        title = "Kang Tao Time Trial",                                                             -- Race title
-        isEnabled = true,                                                          -- Enable the race
-        showWaypoints = false,                                                      -- Set GPS waypoints, waypoint will always be set to next checkpoint + 1
-        classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        title = "Kang Tao Time Trial",       -- Race title
+        isEnabled = true,                    -- Enable the race
+        showWaypoints = false,               -- Set GPS waypoints, waypoint will always be set to next checkpoint + 1
+        classList = true,                    -- Enable the allowedClasses list              
+        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials. This is where we are utilizing cw-performance for the checks.
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -16,25 +16,29 @@ races = {
 			["E"] = true,
 			["F"] = true
 			},
-        whitelist = false,                                                          -- Set to true to enable whitelist                                  
-        whitelistVehicles = {},                                                     -- List of whitelisted vehicles     {[GetHashKey("anubis")] = true,[GetHashKey("car")] = true,}    
-        checkpointRadius = 20.0,                                                    -- Radius of checkpoint
-        checkpointTransparency = 0.0,                                               -- Checkpoint transparancy
-        mapBlipId = 315,                                                            -- Map blip ID
-        mapBlipColor = 5,                                                           -- Map blip color
-        start = { x = 614.6, y = -5049.49, z = 49.84, heading = 86.39, type = Config.cpBlip },     -- Starting race coordinates (/saveRaceStart)
-        checkpoints = {                                                             -- Checkpoints and finish line
-            { x = 832.75, y = -4706.68, z = 100.02, heading = 232.77, type = Config.cpBlip },         -- Race checkpoints, type 5 is a normal checkpoint (/saveRaceCp) 
-            { x = 1065.63, y = -4898.77, z = 100.51, heading = 241.14, type = Config.cpBlip },         -- Race checkpoints, type 5 is a normal checkpoint (/saveRaceCp) 
-            { x = 1197.54, y = -5311.92, z = 129.44, heading = 216.87, type = Config.finishBlip }          -- Race checkpoints, type 9 is a finish line (/saveRaceEnd)
+        whitelist = false,                   -- Set to true to enable whitelist
+        whitelistSpawn = false,              -- Set to true to randomly spawn player in whitelist vehicle.
+        whitelistVehicles = {                -- List of whitelisted vehicles
+            --[1] = {"Stinger"},
+            --[2] = {"Futo"},
+        },
+        checkpointRadius = 20.0,             -- Radius of checkpoint
+        checkpointTransparency = 0.0,        -- Checkpoint transparancy
+        mapBlipId = 315,                     -- Map blip ID
+        mapBlipColor = 5,                    -- Map blip color
+        start = { x = 614.6, y = -5049.49, z = 49.84, heading = 86.39, type = Config.cpBlip },      -- Starting race coordinates
+        checkpoints = {                                                                             -- Checkpoints and finish line
+            { x = 832.75, y = -4706.68, z = 100.02, heading = 232.77, type = Config.cpBlip },       -- Race checkpoints,
+            { x = 1065.63, y = -4898.77, z = 100.51, heading = 241.14, type = Config.cpBlip },      -- Race checkpoints,
+            { x = 1197.54, y = -5311.92, z = 129.44, heading = 216.87, type = Config.finishBlip }   -- Finish checkpoint
         }
     },
     {
-        title = "Dubai Drag",                                                             -- Race title
-        isEnabled = true,                                                          -- Enable the race
-        showWaypoints = false,                                                      -- Set GPS waypoints, waypoint will always be set to next checkpoint + 1
+        title = "Dubai Drag",
+        isEnabled = true,
+        showWaypoints = false,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -45,15 +49,15 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
-        checkpointRadius = 50.0,                                                    -- Radius of checkpoint
-        checkpointTransparency = 1.0,                                               -- Checkpoint transparancy
-        mapBlipId = 315,                                                            -- Map blip ID
-        mapBlipColor = 5,                                                           -- Map blip color
-        start = { x = 5023.8, y = -2903.2, z = 20.64, heading = 0.93, type = Config.cpBlip },     -- Starting race coordinates (/saveRaceStart) vector4(5023.8, -2903.2, 20.64, 0.93)
-        checkpoints = {                                                             -- Checkpoints and finish line
-            --{ x = -60.0, y = 6316.0, z = 31.0, heading = 135.0, type = Config.cpBlip },         -- Race checkpoints, type 5 is a normal checkpoint (/saveRaceCp)
-            { x = 5023.26, y = 7725.25, z = 20.64, heading = 0.37, type = Config.finishBlip }          -- Race checkpoints, type 9 is a finish line (/saveRaceEnd) vector4(5023.26, 7725.25, 20.64, 0.37)
+        checkpointRadius = 50.0,                                                    
+        checkpointTransparency = 1.0,
+        mapBlipId = 315,
+        mapBlipColor = 5,
+        start = { x = 5023.8, y = -2903.2, z = 20.64, heading = 0.93, type = Config.cpBlip },
+        checkpoints = {
+            { x = 5023.26, y = 7725.25, z = 20.64, heading = 0.37, type = Config.finishBlip }
         }
     },
     {
@@ -61,7 +65,7 @@ races = {
         isEnabled = true,
         showWaypoints = false,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -72,6 +76,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
@@ -90,7 +95,7 @@ races = {
         isEnabled = true,
         showWaypoints = false,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -101,6 +106,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
@@ -117,7 +123,7 @@ races = {
         isEnabled = true,
         showWaypoints = true,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -128,6 +134,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
@@ -155,7 +162,7 @@ races = {
         isEnabled = true,
         showWaypoints = true,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -166,6 +173,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
@@ -210,7 +218,7 @@ races = {
         isEnabled = true,
         showWaypoints = false,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -221,6 +229,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 15.0,
         checkpointTransparency = 0.6,
@@ -257,7 +266,7 @@ races = {
         isEnabled = true,
         showWaypoints = false,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -268,6 +277,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 20.0,
         checkpointTransparency = 0.6,
@@ -328,7 +338,7 @@ races = {
         isEnabled = true,
         showWaypoints = true,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -339,6 +349,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
@@ -393,7 +404,7 @@ races = {
         isEnabled = true,
         showWaypoints = true,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -404,6 +415,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 16.0,
         checkpointTransparency = 1.0,
@@ -432,7 +444,7 @@ races = {
         isEnabled = true,
         showWaypoints = true,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -443,6 +455,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 16.0,
         checkpointTransparency = 1.0,
@@ -478,7 +491,7 @@ races = {
         isEnabled = true,
         showWaypoints = true,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -489,6 +502,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 20.0,
         checkpointTransparency = 1.0,
@@ -519,7 +533,7 @@ races = {
         isEnabled = true,
         showWaypoints = true,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -530,6 +544,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
@@ -575,7 +590,7 @@ races = {
         isEnabled = true,
         showWaypoints = true,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -586,6 +601,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 20.0,
         checkpointTransparency = 1.0,
@@ -642,7 +658,7 @@ races = {
         isEnabled = true,
         showWaypoints = true,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -653,6 +669,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 16.0,
         checkpointTransparency = 1.0,
@@ -702,7 +719,7 @@ races = {
         isEnabled = true,
         showWaypoints = false,
         classList = true,
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -713,6 +730,7 @@ races = {
 			["F"] = true
 			},
         whitelist = false,
+        whitelistSpawn = false,
         whitelistVehicles = {},
         checkpointRadius = 24.0,
         checkpointTransparency = 1.0,
@@ -734,11 +752,11 @@ races = {
         }
     },
 		{
-        title = "Stinger GT",                                                             -- Race title
-        isEnabled = true,                                                          -- Enable the race
-        showWaypoints = true,                                                      -- Set GPS waypoints, waypoint will always be set to next checkpoint + 1
-        classList = true,                    -- Enable the allowedClasses list
-        allowedClasses = {                   -- true means that car class is enabled/false means that class cant start the timetrials
+        title = "Stinger Sprint",
+        isEnabled = true,
+        showWaypoints = true,
+        classList = true,
+        allowedClasses = {
             ["X"] = true,
             ["S"] = true,
             ["A"] = true,
@@ -749,21 +767,65 @@ races = {
 			["F"] = true
 			},
         whitelist = true,
+        whitelistSpawn = true,
         whitelistVehicles = {
-            [GetHashKey("Stinger")] = true,
+            [1] = {"Stinger"},
+            [2] = {"Futo"},
         },
-        spawnVeh = true,                                                           -- Set to true to spawn vehicle on race start, set to false to use player owned whitelisted vehicle, if multiple whitelisted vehicles are available it will choose randomly.
-        checkpointRadius = 20.0,                                                    -- Radius of checkpoint
-        checkpointTransparency = 1.0,                                               -- Checkpoint transparancy
-        mapBlipId = 315,                                                            -- Map blip ID
-        mapBlipColor = 5,                                                           -- Map blip color
-        start = {x = 890.76, y = -2353.09, z = 30.4, heading = 268.81, type = Config.cpBlip },     -- Starting race coordinates (/saveRaceStart)
-        checkpoints = {                                                             -- Checkpoints and finish line
+        checkpointRadius = 20.0,
+        checkpointTransparency = 1.0,
+        mapBlipId = 315,
+        mapBlipColor = 5,
+        start = {x = 890.76, y = -2353.09, z = 30.4, heading = 268.81, type = Config.cpBlip },
+        checkpoints = {
             {x = 947.63, y = -2463.41, z = 28, heading = 266.22, type = Config.cpBlip },
             {x = 1051.02, y = -2243.75, z = 30, heading = 356.08, type = Config.cpBlip },
             {x = 928.04, y = -2125.33, z = 30, heading = 170.88, type = Config.cpBlip },
 			{x = 898.44, y = -2353.89, z = 32, heading = 100, type = Config.finishBlip }
 		}
+    },
+    {
+        title = "El Burro Loop",
+        isEnabled = true,
+        showWaypoints = false,
+        classList = true,
+        allowedClasses = {
+            ["X"] = true,
+            ["S"] = true,
+            ["A"] = true,
+            ["B"] = true,
+            ["C"] = true,
+			["D"] = true,
+			["E"] = true,
+			["F"] = true
+			},
+        whitelist = false,
+        whitelistSpawn = false,
+        whitelistVehicles = {},
+        checkpointRadius = 24.0,
+        checkpointTransparency = 1.0,
+        mapBlipId = 315,
+        mapBlipColor = 5,
+        start = { x = 1328.71, y = -2586.0, z = 47.55, heading = 285.98, type = Config.cpBlip },
+        checkpoints = {   
+            {x = 1634.56, y = -2437.44, z = 89.1, heading = 20.85, type = Config.cpBlip},
+            {x = 1752.91, y = -1882.14, z = 116.84, heading = 13.88, type = Config.cpBlip},
+            {x = 1909.94, y = -1313.6, z = 133.17, heading = 3.66, type = Config.cpBlip},
+            {x = 1944.35, y = -937.38, z = 78.74, heading = 125.24, type = Config.cpBlip},
+            {x = 1708.36, y = -1302.97, z = 85.18, heading = 121.22, type = Config.cpBlip},
+            {x = 1269.62, y = -1469.13, z = 35.51, heading = 19.41, type = Config.cpBlip},
+            {x = 1166.36, y = -868.04, z = 53.62, heading = 344.59, type = Config.cpBlip},
+            {x = 1292.72, y = -652.4, z = 67.02, heading = 15.95, type = Config.cpBlip},
+            {x = 1284.12, y = -478.12, z = 68.69, heading = 341.51, type = Config.cpBlip},
+            {x = 1054.45, y = -412.0, z = 66.47, heading = 131.66, type = Config.cpBlip},
+            {x = 895.63, y = -582.33, z = 56.95, heading = 235.51, type = Config.cpBlip},
+            {x = 1187.56, y = -806.69, z = 55.62, heading = 163.49, type = Config.cpBlip},
+            {x = 1236.75, y = -1358.28, z = 34.71, heading = 181.98, type = Config.cpBlip},
+            {x = 1427.53, y = -1820.37, z = 68.64, heading = 187.38, type = Config.cpBlip},
+            {x = 1266.33, y = -2129.92, z = 46.23, heading = 200.96, type = Config.cpBlip},
+            {x = 1187.68, y = -2582.08, z = 36.2, heading = 227.42, type = Config.cpBlip},
+            {x = 1320.63, y = -2588.57, z = 46.96, heading = 285.77, type = Config.finishBlip}
+        }
     }
 }
 exports('GetRaces', function()

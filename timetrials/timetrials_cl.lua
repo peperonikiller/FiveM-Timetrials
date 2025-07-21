@@ -65,7 +65,12 @@ function preRace()
                     Draw3DText(race.start.x, race.start.y, race.start.z-0.600, race.title, Config.RACING_HUD_COLOR, 4, 0.3, 0.3)
                     -- Draw "Whitelisted" text if race is whitelisted
                     if race.whitelist then
-                        Draw3DText(race.start.x, race.start.y, race.start.z-1.500, "Whitelisted", {0, 255, 0, 200}, 4, 0.08, 0.08)
+                        local text = ""
+                        for _, vehicleName in pairs(race.whitelistVehicles) do
+                            text = text .. vehicleName[1] .. " - "
+                        end
+                        text = text:sub(1, -4) -- remove trailing - and space
+                        Draw3DText(race.start.x, race.start.y, race.start.z-1.500, "Whitelisted: " .. text, {0, 255, 0, 200}, 4, 0.08, 0.08)
                     end
 
                 end
@@ -84,7 +89,7 @@ function preRace()
                             table.sort(sortedScores, function(a,b) return a.value.time < b.value.time end)
 
                             -- Create new list with scores to draw
-                            local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
+                            local vehicle = GetVehiclePedIsIn(player, false)
                             local cwinfo, cwclass, perfRating = getVehiclePerformanceInfo(vehicle)
                             local count = 0
                             drawScores = {}
@@ -134,98 +139,82 @@ function preRace()
                     if (IsControlJustReleased(1, 51)) then
                         if race.classList then
                             --cw-performance
-                            local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
+                            local vehicle = GetVehiclePedIsIn(player, false)
                             local cwinfo, cwclass, perfRating = getVehiclePerformanceInfo(vehicle)
-                                -- if class of car is allowed and no whitelist start the race
-                                if race.allowedClasses[cwclass] == true and race.whitelist == false then
+                            -- if class of car is allowed and no whitelist start the race
+                            if race.allowedClasses[cwclass] and race.whitelist == false then
+                                raceState.index = index
+                                raceState.scores = nil
+                                raceState.getTime = index
+                                TriggerEvent("raceCountdown")
+                            elseif race.allowedClasses[cwclass] == false then
+                                NotifyNotAllowedClass(cwclass)
+                            elseif race.allowedClasses[cwclass] and race.whitelist then
+                                local pVeh = GetVehiclePedIsIn(player, false)
+                                local pVehModel = GetEntityModel(pVeh)
+                                local isWhitelisted = false
+
+                                for _, whitelistedModel in pairs(race.whitelistVehicles) do
+                                    if pVehModel == GetHashKey(whitelistedModel[1]) then
+                                        isWhitelisted = true
+                                    break
+                                    end
+                                end
+
+                                if isWhitelisted then
                                     raceState.index = index
                                     raceState.scores = nil
                                     raceState.getTime = index
                                     TriggerEvent("raceCountdown")
-                                elseif race.allowedClasses[cwclass] == false then
-                                    NotifyNotAllowedClass(cwclass)
-                                -- if class of car is allowed and whitelist is on and spawn player in vehicle is false then we do shit
-                                elseif race.allowedClasses[cwclass] == true and race.whitelist == true and race.spawnVeh == false then
-                                    local pVehModel = GetEntityModel(vehicle)
-                                    -- checking if player vehicle is in the whitelist table
-                                    if race.whitelistVehicles[pVehModel] == true then
-                                        raceState.index = index
-                                        raceState.scores = nil
-                                        raceState.getTime = index
-                                        TriggerEvent("raceCountdown")
-                                    else
-                                        notify("Your vehicle is not whitelisted for this race!", "error")
-                                    end
-                                elseif race.allowedClasses[cwclass] == true and race.whitelist == true and race.spawnVeh == true then
-                                    -- check if player is in a vehicle, if so we cant start.
-                                    if IsPedInAnyVehicle(GetPlayerPed(-1), false) then
-                                        notify("You are already in a vehicle!", "error")
-                                    else
-                                        --spawn player in whitelisted vehicle from the race.whitelistVehicles table then start the race
-                                        local vehicleHashes = {}
-                                        for hash, _ in pairs(race.whitelistVehicles) do
-                                            table.insert(vehicleHashes, hash)
-                                        end
-
-                                        local vehicleHash = vehicleHashes[math.random(1, #vehicleHashes)]
-                                        local playerPed = GetPlayerPed(-1)
-                                        local playerCoords = GetEntityCoords(playerPed)
-                                        local vehicle = CreateVehicle(vehicleHash, playerCoords, 0, true, false)
-                                        SetPedIntoVehicle(playerPed, vehicle, -1)
-                                        local vehicleHandle = NetworkGetNetworkIdFromEntity(vehicle)
-                                        SetNetworkIdCanMigrate(vehicleHandle, false)
-                                        SetEntityInvincible(vehicle, true)
-                                        raceState.index = index
-                                        raceState.scores = nil
-                                        raceState.getTime = index
-                                        TriggerEvent("raceCountdown")
-                                    end
+                                elseif race.whitelistSpawn then
+                                    -- Pick a random entry
+                                    local randomIndex = math.random(1, #race.whitelistVehicles)
+                                    local vehicleName = race.whitelistVehicles[randomIndex][1]
+                                    SpawnMyVehicle(vehicleName)
+                                    raceState.index = index
+                                    raceState.scores = nil
+                                    raceState.getTime = index
+                                    TriggerEvent("raceCountdown")
+                                else
+                                    notify("Your vehicle is not whitelisted for this race!", "error")
                                 end
-                        end
-                        if  not race.classList then
-                            -- finish this, this is not using cw-performance so we need to do all our IF statements again but without cw-performance checks
-                            local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
+                            end
+                        elseif  race.classList ~= true then
                             if race.whitelist == false then
+                                raceState.index = index
+                                raceState.scores = nil
+                                raceState.getTime = index
+                                TriggerEvent("raceCountdown")
+                            elseif race.whitelist then
+                                local pVeh = GetVehiclePedIsIn(player, false)
+                                local pVehModel = GetEntityModel(pVeh)
+                                local isWhitelisted = false
+
+                                for _, whitelistedModel in pairs(race.whitelistVehicles) do
+                                    if pVehModel == GetHashKey(whitelistedModel[1]) then
+                                        isWhitelisted = true
+                                    break
+                                    end
+                                end
+
+                                if isWhitelisted then
                                     raceState.index = index
                                     raceState.scores = nil
                                     raceState.getTime = index
                                     TriggerEvent("raceCountdown")
-                            elseif race.whitelist == true and race.spawnVeh == false then
-                                    local pVehModel = GetEntityModel(vehicle)
-                                    -- checking if player vehicle is in the whitelist table
-                                    if race.whitelistVehicles[pVehModel] == true then
-                                        raceState.index = index
-                                        raceState.scores = nil
-                                        raceState.getTime = index
-                                        TriggerEvent("raceCountdown")
-                                    else
-                                        notify("Your vehicle is not whitelisted for this race!", "error")
-                                    end
-                            elseif race.whitelist == true and race.spawnVeh == true then
-                                    -- check if player is in a vehicle, if so we cant start.
-                                    if IsPedInAnyVehicle(GetPlayerPed(-1), false) then
-                                        notify("You are already in a vehicle!", "error")
-                                    else
-                                        --spawn player in whitelisted vehicle from the race.whitelistVehicles table then start the race
-                                        local vehicleHashes = {}
-                                        for hash, _ in pairs(race.whitelistVehicles) do
-                                            table.insert(vehicleHashes, hash)
-                                        end
-
-                                        local vehicleHash = vehicleHashes[math.random(1, #vehicleHashes)]
-                                        local playerPed = GetPlayerPed(-1)
-                                        local playerCoords = GetEntityCoords(playerPed)
-                                        local vehicle = CreateVehicle(vehicleHash, playerCoords, 0, true, false)
-                                        SetPedIntoVehicle(playerPed, vehicle, -1)
-                                        local vehicleHandle = NetworkGetNetworkIdFromEntity(vehicle)
-                                        SetNetworkIdCanMigrate(vehicleHandle, false)
-                                        SetEntityInvincible(vehicle, true)
-                                        raceState.index = index
-                                        raceState.scores = nil
-                                        raceState.getTime = index
-                                        TriggerEvent("raceCountdown")
-                                    end
+                                elseif race.whitelistSpawn then
+                                    -- Pick a random entry
+                                    local randomIndex = math.random(1, #race.whitelistVehicles)
+                                    local vehicleName = race.whitelistVehicles[randomIndex][1]
+                                    SpawnMyVehicle(vehicleName)
+                                    raceState.index = index
+                                    raceState.scores = nil
+                                    raceState.getTime = index
+                                    TriggerEvent("raceCountdown")
+                                else
+                                    notify("Your vehicle is not whitelisted for this race!", "error")
                                 end
+                            end
                         end
                     end
                 end
@@ -233,6 +222,50 @@ function preRace()
         end
     end
 end
+
+local spawnedVehicle = nil
+local monitoring = false
+
+-- Call this when you spawn the vehicle
+function SpawnMyVehicle(modelName)
+    local model = GetHashKey(modelName)
+    RequestModel(model)
+    while not HasModelLoaded(model) do Wait(10) end
+
+    local ped = PlayerPedId()
+    local coords = GetEntityCoords(ped)
+    local heading = GetEntityHeading(ped)
+
+    local vehicle = CreateVehicle(model, coords.x, coords.y, coords.z, heading, true, false)
+    TaskWarpPedIntoVehicle(ped, vehicle, -1)
+
+    exports["LegacyFuel"]:SetFuel(vehicle, 100)
+    SetEntityAsMissionEntity(vehicle, true, true)
+
+    spawnedVehicle = vehicle
+    monitoring = true
+end
+
+-- Monitor exit and cleanup
+CreateThread(function()
+    while true do
+        Wait(1000)
+
+        if monitoring and spawnedVehicle and DoesEntityExist(spawnedVehicle) then
+            local ped = PlayerPedId()
+            if not IsPedInVehicle(ped, spawnedVehicle, false) then
+                monitoring = false -- stop checking
+                Wait(3000) -- wait to ensure they fully exited
+
+                if DoesEntityExist(spawnedVehicle) then
+                    DeleteEntity(spawnedVehicle)
+                    spawnedVehicle = nil
+                    print("Vehicle deleted after exit.")
+                end
+            end
+        end
+    end
+end)
 
 function NotifyNotAllowedClass(cwclass)
     local text = "Your car is class: " .. cwclass .. " which is not allowed for this race!"
@@ -512,6 +545,8 @@ function DrawHudText(text,colour,coordsx,coordsy,scalex,scaley)
     AddTextComponentString(text)
     DrawText(coordsx,coordsy)
 end
+
+
 
 exports("GetRaceState", function()
     return raceState
