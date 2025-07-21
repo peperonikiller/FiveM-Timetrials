@@ -67,5 +67,5 @@ Config.GasPumpLocations = {
     vector3(3604.0, -6594.84, 2188.5),	--Nurburgring
     vector3(3575.13, -6624.31, 2188.5),	--Nurburgring
     vector3(3701.25, -6543.38, 2190),	--Nurburgring
-	vector3(911.37, -2347.59, 21.21) 	--Underground Car Meet Garage Resource
+	vector3(911.37, -2347.59, 20.20) 	--Underground Car Meet Garage Resource
 } 																			
