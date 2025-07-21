@@ -5,7 +5,7 @@ game 'gta5'
 description '[QB]TimeTrials Remastered'
 author 'Brent_Peterson | Remaster: Peperonikiller'
 
-version '0.8.0'
+version '0.8.5'
 
 
 client_scripts {
