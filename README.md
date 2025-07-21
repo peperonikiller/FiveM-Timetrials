@@ -34,6 +34,6 @@ FiveM resource for timetrial races with leaderboard and server side scores.
 1. Install dependancy script here: https://github.com/Coffeelot/cw-performance
 2. Install timetrials
 3. Setup config to your liking
-4. If upgrading from 0.7.0 please rename scores.txt to scores.json
+4. Setup whitelist/class options in track.lua
 
 
