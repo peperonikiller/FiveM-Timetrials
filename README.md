@@ -1,7 +1,7 @@
 # Remaster project
 
 
-0.8.0 Update on July 13th
+0.8.5 Update on July 21st
 
 
 
@@ -19,7 +19,10 @@ New features:
 10. Class based high scores, only see scores from same car class
 11. Payout for completion, high score, and time remaining bonus
 
-
+Upcoming:
+1. Proper score payout
+2. Finish framework bridging
+3. More to come...
 
 # FiveM Timetrials Remastered
 
