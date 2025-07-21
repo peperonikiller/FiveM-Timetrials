@@ -1,3 +1,4 @@
+local json = require('json')
 -- Save scores to JSON file
 function saveScores(scores)
     local contents = json.encode(scores)
