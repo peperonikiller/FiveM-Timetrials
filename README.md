@@ -35,5 +35,6 @@ FiveM resource for timetrial races with leaderboard and server side scores.
 2. Install timetrials
 3. Setup config to your liking
 4. Setup whitelist/class options in track.lua
+5. If custom cars show as NULL on the scores list, use vehicle_names.lua to fix.
 
 
